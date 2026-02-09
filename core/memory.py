@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Iterable, Protocol
 
 from .models import MemoryRegion
+from .write_audit import UndoSnapshot, UndoStack, WriteAuditLog, WriteEvent
 
 
 class MemoryBackend(Protocol):
@@ -22,6 +23,9 @@ class MemoryBackend(Protocol):
 @dataclass
 class WindowsMemoryBackend:
     handle: int
+    pid: int
+    audit_log: WriteAuditLog
+    undo_stack: UndoStack
 
     def regions(self) -> Iterable[MemoryRegion]:
         raise NotImplementedError("Region enumeration requires platform bindings.")
@@ -41,6 +45,7 @@ class WindowsMemoryBackend:
         return buffer.raw[: bytes_read.value]
 
     def write(self, address: int, data: bytes) -> None:
+        before = self.read(address, len(data))
         bytes_written = ctypes.c_size_t(0)
         result = ctypes.windll.kernel32.WriteProcessMemory(
             self.handle,
@@ -51,6 +56,17 @@ class WindowsMemoryBackend:
         )
         if not result:
             raise OSError("WriteProcessMemory failed.")
+        self.undo_stack.push(UndoSnapshot(pid=self.pid, address=address, data=before))
+        self.audit_log.record(
+            WriteEvent(
+                timestamp=self.audit_log.now(),
+                pid=self.pid,
+                address=address,
+                before=before,
+                after=data,
+                reason="user_write",
+            )
+        )
 
 
 @dataclass
@@ -69,9 +85,11 @@ class MockMemoryBackend:
 
 class MemoryBackendFactory:
     @staticmethod
-    def for_platform(handle: int | None = None) -> MemoryBackend:
+    def for_platform(handle: int | None = None, pid: int | None = None) -> MemoryBackend:
         if platform.system().lower() == "windows":
             if handle is None:
                 raise ValueError("Windows backend requires a process handle.")
-            return WindowsMemoryBackend(handle=handle)
+            if pid is None:
+                raise ValueError("Windows backend requires a pid for auditing.")
+            return WindowsMemoryBackend(handle=handle, pid=pid, audit_log=WriteAuditLog(), undo_stack=UndoStack())
         raise NotImplementedError("Memory backend only implemented for Windows; use MockMemoryBackend in tests.")

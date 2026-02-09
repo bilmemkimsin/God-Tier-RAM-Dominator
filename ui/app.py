@@ -4,6 +4,7 @@ import sys
 from PySide6 import QtCore, QtWidgets
 
 from core.process import ProcessLister
+from ui.ai_panel import AiAssistantPanel
 from ui.theme import CYBER_DARK
 
 
@@ -35,6 +36,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.history_view = QtWidgets.QTextEdit("Value history graph placeholder")
         self.console = QtWidgets.QTextEdit("Script console placeholder")
         self.log_view = QtWidgets.QTextEdit("Log output")
+        self.write_button = QtWidgets.QPushButton("Write Value")
+        self.write_button.clicked.connect(self._confirm_write)
 
         left_dock = self._make_dock("Processes", QtWidgets.QWidget())
         left_layout = QtWidgets.QVBoxLayout(left_dock.widget())
@@ -58,6 +61,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, bottom_dock)
 
         grid.addWidget(self.scan_results, 0, 0)
+        grid.addWidget(self.write_button, 1, 0, alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
+
+        ai_dock = self._make_dock("AI Assistant (Offline)", AiAssistantPanel())
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, ai_dock)
+
+        advanced_dock = self._make_dock("Advanced / God Mode (Kernel)", self._build_advanced_panel())
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, advanced_dock)
 
         self._refresh_processes()
 
@@ -79,6 +89,35 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.process_list.addItem(f"{proc.pid} - {proc.name}")
         except RuntimeError as exc:
             self.process_list.addItem(str(exc))
+
+    def _confirm_write(self) -> None:
+        dialog = QtWidgets.QMessageBox(self)
+        dialog.setWindowTitle("Confirm Memory Write")
+        dialog.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+        dialog.setText(
+            "Bu değişiklik oyunun ToS'ini ihlal edebilir ve kararsızlığa neden olabilir.\n"
+            "Yalnızca izinli olduğunuz yazılımlarda ve riskleri anladıysanız devam edin."
+        )
+        dialog.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+        dialog.exec()
+
+    def _build_advanced_panel(self) -> QtWidgets.QWidget:
+        panel = QtWidgets.QWidget()
+        layout = QtWidgets.QVBoxLayout(panel)
+        enable = QtWidgets.QCheckBox("Enable Kernel Driver (Advanced)")
+        enable.setChecked(False)
+        warning = QtWidgets.QLabel(
+            "Uyarılar:\\n"
+            "• Kernel driver yüklemek sisteminizi kararsız hale getirebilir (BSOD riski).\\n"
+            "• Driver Signature Enforcement'ı devre dışı bırakmanız veya test signing kullanmanız gerekir.\\n"
+            "• Modern anti-cheat'ler (EAC, BattlEye, Vanguard) kernel erişimini tespit edip ban verebilir.\\n"
+            "• Sadece eğitimsel/offline kullanım için. Online oyunlarda kullanmak yasaktır ve hesabınız riske girer."
+        )
+        warning.setWordWrap(True)
+        layout.addWidget(enable)
+        layout.addWidget(warning)
+        layout.addStretch(1)
+        return panel
 
 
 def main() -> int:

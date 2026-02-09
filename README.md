@@ -14,6 +14,9 @@ TitanRAM is a modern, modular memory analysis workstation built for power users.
 - Snapshot diff + value history data model.
 - Export model definitions (CT/JSON/C++ header stubs).
 - Scripting entrypoints for Python/Lua (stubs).
+- Write audit log + undo snapshot support in the core engine.
+- Offline AI assistant panel (local LLM via Ollama-compatible API).
+- Optional kernel driver sample (advanced / opt-in).
 
 ## Project Layout
 ```
@@ -23,6 +26,7 @@ injector/    # DLL/agent placeholders
 scripts/     # sample scripts
 docs/        # documentation
 demo_target/ # demo C++ target
+kernel_driver/ # optional kernel RW driver sample
 ```
 
 ## Quick Start (Windows)
@@ -35,6 +39,9 @@ python -m ui.app
 
 > On non‑Windows platforms, memory access APIs are stubbed for safety and clarity. The mock engine is still fully testable.
 
+## User-Mode Kurulum (Kolay Yol)
+TitanRAM varsayılan olarak **tamamen user-mode** çalışır. Admin hakları + SeDebugPrivilege ile çoğu single-player hedef yeterince kapsanır. Ekstra kurulum gerekmez; yukarıdaki Quick Start yeterlidir.
+
 ## Usage Overview
 1. Launch TitanRAM.
 2. Select a process from the left panel and attach.
@@ -46,8 +53,46 @@ python -m ui.app
 - `.ct` Cheat Engine table (basic export stub).
 - JSON and C++ header exports for SDK‑style workflows.
 
-## Safety Notice
+## Safety & Ethics (Read This)
+- **Default mode is user‑mode only** (OpenProcess + Read/WriteProcessMemory). Admin rights + SeDebugPrivilege cover most single‑player targets.
+- **Kernel mode is optional and dangerous**. It is hidden behind an Advanced/God Mode concept and requires explicit user action.
+- **Online/competitive games are off‑limits**. Anti‑cheat systems can detect kernel access and issue bans.
+- **Educational use only**: reverse engineering, malware analysis, debugging, and single‑player modding.
+
 TitanRAM **does not** include anti‑cheat bypasses or network attack tooling. Any attempt to use it against third‑party services or online games is forbidden. This project is a learning and research platform.
+
+## Kernel Mode (Advanced / God Mode)
+The optional kernel driver is provided for offline research on machines you control.
+
+### Risks
+- Kernel drivers can crash your system (BSOD risk).
+- Driver Signature Enforcement must be disabled or test signing enabled.
+- Modern anti‑cheat systems can detect kernel access and ban accounts.
+
+### Test Signing (Recommended)
+```powershell
+bcdedit /set testsigning on
+shutdown /r /t 0
+```
+
+### Driver İmzalama (Özet)
+```powershell
+$cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=TitanRAM Test" -CertStoreLocation Cert:\\LocalMachine\\My
+$pwd = ConvertTo-SecureString -String "titanram" -Force -AsPlainText
+Export-PfxCertificate -Cert $cert -FilePath .\\TitanRAM.pfx -Password $pwd
+"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\signtool.exe" sign /f TitanRAM.pfx /p titanram /t http://timestamp.digicert.com TitanRAM.sys
+```
+
+### Temporary Signature Enforcement Disable
+Advanced Startup → Troubleshoot → Startup Settings → **7. Disable driver signature enforcement**
+
+### Build + Load (Overview)
+- Install Visual Studio 2022 + WDK
+- Build the driver in `kernel_driver/`
+- Sign the driver with a test certificate
+- Load with `sc.exe` or OSR Loader
+
+See `kernel_driver/README.md` for a step‑by‑step walkthrough.
 
 ## Docs
 See `docs/USAGE.md` for workflows and architecture notes.

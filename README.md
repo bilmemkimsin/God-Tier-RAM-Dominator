@@ -40,6 +40,31 @@ python -m ui.app
 
 > On non‑Windows platforms, memory access APIs are stubbed for safety and clarity. The mock engine is still fully testable.
 
+<<<<<< codex/design-ultra-powerful-memory-analysis-tool-kadqva
+## Installation (Tek Tık Kurulum)
+### Son kullanıcı (önerilen)
+1. **TitanRAM-Setup.exe** dosyasını indirin.
+2. Çalıştırın ve sihirbazdaki seçenekleri tamamlayın.
+3. Kurulum sonunda **“Programı şimdi başlat”** seçeneğini işaretleyin.
+
+> Kernel modu tamamen opsiyoneldir ve yalnızca Advanced/God Mode ile etkinleştirilir.
+
+### Geliştirici / Derleme (setup.exe üretimi)
+TitanRAM için tercih edilen derleme yöntemi **pyside6-deploy (Nuitka)** ile `--onefile` modudur.
+
+#### 1) Onefile EXE üret (tercih edilen)
+```powershell
+build.ps1 -Mode pyside6-deploy
+```
+
+#### 2) PyInstaller (alternatif)
+```powershell
+build.ps1 -Mode pyinstaller
+```
+
+#### 3) Inno Setup ile paketle
+1. `dist/TitanRAM/` çıktısını `installer/TitanRAM.iss` dosyasının `Files` bölümünde belirtilen konuma yerleştirin.
+=======
 ## User-Mode Kurulum (Kolay Yol)
 TitanRAM varsayılan olarak **tamamen user-mode** çalışır. Admin hakları + SeDebugPrivilege ile çoğu single-player hedef yeterince kapsanır. Ekstra kurulum gerekmez; yukarıdaki Quick Start yeterlidir.
 
@@ -58,6 +83,7 @@ pyinstaller --noconsole --name TitanRAM ui/app.py
 
 ### 2) Inno Setup ile paketle
 1. `dist/TitanRAM/` çıktılarını `installer/` scriptinin kullandığı `Files` bölümüne kopyalayın.
+>>>>>> main
 2. `installer/third_party/` içine şu dosyaları koyun:
    - `python-3.12.x-embed-amd64.zip`
    - `get-pip.py`

@@ -20,3 +20,15 @@ This folder contains the Inno Setup script and build notes for producing a singl
 ## Notes
 - The installer can enable test signing and install the driver **only if** the user opts in.
 - Uninstall removes the driver and deletes the installed files.
+<<<<<< codex/design-ultra-powerful-memory-analysis-tool-kadqva
+
+## Hidden Imports / Data Hints
+If PyInstaller misses modules, include these in your spec:
+- `PySide6`, `PySide6.QtCore`, `PySide6.QtGui`, `PySide6.QtWidgets`
+- `capstone`, `keystone`, `ollama`, `websocket`
+
+Data suggestions:
+- `ui/theme.py`
+- Any bundled icons or assets under `installer/assets/`
+=======
+>>>>>> main

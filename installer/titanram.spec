@@ -12,6 +12,7 @@ analysis = Analysis(
     pathex=[str(project_root)],
     binaries=[],
     datas=[(str(project_root / "ui" / "theme.py"), "ui")],
+<<<<<< codex/design-ultra-powerful-memory-analysis-tool-kadqva
     hiddenimports=[
         "PySide6",
         "PySide6.QtCore",
@@ -22,6 +23,9 @@ analysis = Analysis(
         "ollama",
         "websocket",
     ],
+=======
+    hiddenimports=["PySide6"],
+>>>>>> main
     hookspath=[],
     runtime_hooks=[],
     excludes=[],

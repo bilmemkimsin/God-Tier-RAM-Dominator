@@ -39,6 +39,9 @@ python -m ui.app
 
 > On non‑Windows platforms, memory access APIs are stubbed for safety and clarity. The mock engine is still fully testable.
 
+## User-Mode Kurulum (Kolay Yol)
+TitanRAM varsayılan olarak **tamamen user-mode** çalışır. Admin hakları + SeDebugPrivilege ile çoğu single-player hedef yeterince kapsanır. Ekstra kurulum gerekmez; yukarıdaki Quick Start yeterlidir.
+
 ## Usage Overview
 1. Launch TitanRAM.
 2. Select a process from the left panel and attach.
@@ -70,6 +73,14 @@ The optional kernel driver is provided for offline research on machines you cont
 ```powershell
 bcdedit /set testsigning on
 shutdown /r /t 0
+```
+
+### Driver İmzalama (Özet)
+```powershell
+$cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=TitanRAM Test" -CertStoreLocation Cert:\\LocalMachine\\My
+$pwd = ConvertTo-SecureString -String "titanram" -Force -AsPlainText
+Export-PfxCertificate -Cert $cert -FilePath .\\TitanRAM.pfx -Password $pwd
+"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\signtool.exe" sign /f TitanRAM.pfx /p titanram /t http://timestamp.digicert.com TitanRAM.sys
 ```
 
 ### Temporary Signature Enforcement Disable

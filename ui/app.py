@@ -95,8 +95,8 @@ class MainWindow(QtWidgets.QMainWindow):
         dialog.setWindowTitle("Confirm Memory Write")
         dialog.setIcon(QtWidgets.QMessageBox.Icon.Warning)
         dialog.setText(
-            "Writing to process memory can violate software terms of service and may cause instability.\n"
-            "Only proceed if you have explicit permission and understand the risks."
+            "Bu değişiklik oyunun ToS'ini ihlal edebilir ve kararsızlığa neden olabilir.\n"
+            "Yalnızca izinli olduğunuz yazılımlarda ve riskleri anladıysanız devam edin."
         )
         dialog.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
         dialog.exec()
@@ -107,11 +107,11 @@ class MainWindow(QtWidgets.QMainWindow):
         enable = QtWidgets.QCheckBox("Enable Kernel Driver (Advanced)")
         enable.setChecked(False)
         warning = QtWidgets.QLabel(
-            "Warnings:\\n"
-            "• Kernel drivers can crash your system (BSOD risk).\\n"
-            "• Driver Signature Enforcement must be disabled or test signing enabled.\\n"
-            "• Modern anti-cheat systems can detect kernel access and ban accounts.\\n"
-            "• Educational/offline use only."
+            "Uyarılar:\\n"
+            "• Kernel driver yüklemek sisteminizi kararsız hale getirebilir (BSOD riski).\\n"
+            "• Driver Signature Enforcement'ı devre dışı bırakmanız veya test signing kullanmanız gerekir.\\n"
+            "• Modern anti-cheat'ler (EAC, BattlEye, Vanguard) kernel erişimini tespit edip ban verebilir.\\n"
+            "• Sadece eğitimsel/offline kullanım için. Online oyunlarda kullanmak yasaktır ve hesabınız riske girer."
         )
         warning.setWordWrap(True)
         layout.addWidget(enable)

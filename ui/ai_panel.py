@@ -19,6 +19,14 @@ class AiAssistantPanel(QtWidgets.QWidget):
 
         layout.addWidget(QtWidgets.QLabel("Model"))
         layout.addWidget(self.model)
+        layout.addWidget(
+            QtWidgets.QLabel(
+                "Örnek istemler:\n"
+                "• Bu AOB için en stabil signature öner\n"
+                "• HP değeri için olası pointer chain yollarını tahmin et\n"
+                "• Bu struct dump'ından field isimleri öner"
+            )
+        )
         layout.addWidget(self.prompt)
         layout.addWidget(self.run_button)
         layout.addWidget(self.output)

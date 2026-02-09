@@ -27,6 +27,7 @@ scripts/     # sample scripts
 docs/        # documentation
 demo_target/ # demo C++ target
 kernel_driver/ # optional kernel RW driver sample
+installer/  # Inno Setup script + build assets
 ```
 
 ## Quick Start (Windows)
@@ -41,6 +42,28 @@ python -m ui.app
 
 ## User-Mode Kurulum (Kolay Yol)
 TitanRAM varsayılan olarak **tamamen user-mode** çalışır. Admin hakları + SeDebugPrivilege ile çoğu single-player hedef yeterince kapsanır. Ekstra kurulum gerekmez; yukarıdaki Quick Start yeterlidir.
+
+## Tek Tık Kurulum (setup.exe)
+TitanRAM, Inno Setup ile tek bir `setup.exe` üretilecek şekilde tasarlanmıştır.
+
+### 1) PyInstaller ile EXE üret
+```powershell
+pyinstaller installer/titanram.spec
+```
+
+Alternatif komut:
+```powershell
+pyinstaller --noconsole --name TitanRAM ui/app.py
+```
+
+### 2) Inno Setup ile paketle
+1. `dist/TitanRAM/` çıktılarını `installer/` scriptinin kullandığı `Files` bölümüne kopyalayın.
+2. `installer/third_party/` içine şu dosyaları koyun:
+   - `python-3.12.x-embed-amd64.zip`
+   - `get-pip.py`
+3. `installer/TitanRAM.iss` dosyasını Inno Setup ile derleyin.
+
+Detaylar için `installer/README.md` dosyasına bakın.
 
 ## Usage Overview
 1. Launch TitanRAM.
